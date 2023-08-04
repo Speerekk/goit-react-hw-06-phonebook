@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDispatch, useSelector } from 'react-redux';
 import { nanoid } from 'nanoid';
 import ContactForm from './components/ContactForm/ContactForm';
@@ -12,14 +12,14 @@ import {
 } from './components/Redux/ContactsSlice';
 
 const App = () => {
-  // Получаем данные из хранилища с помощью хука useSelector
+  // Додайте станові змінні
+  const [name, setName] = useState('');
+  const [number, setNumber] = useState('');
+
   const contacts = useSelector(state => state.contacts.contacts);
   const filter = useSelector(state => state.contacts.filter);
-
-  // Используем хук useDispatch для отправки экшенов Redux
   const dispatch = useDispatch();
 
-  // Загрузка данных из локального хранилища при монтировании компонента
   useEffect(() => {
     const savedFilter = localStorage.getItem('filter');
     if (savedFilter) {
@@ -27,19 +27,16 @@ const App = () => {
     }
   }, [dispatch]);
 
-  // Сохранение фильтра в локальное хранилище при его изменении
   useEffect(() => {
     localStorage.setItem('filter', filter);
   }, [filter]);
 
   const handleNameChange = event => {
-    // Получаем новое значение из поля ввода имени и обновляем состояние
-    setName(event.target.value);
+    setName(event.target.value); // Використовуйте setName для оновлення стану name
   };
 
   const handleNumberChange = event => {
-    // Получаем новое значение из поля ввода номера и обновляем состояние
-    setNumber(event.target.value);
+    setNumber(event.target.value); // Використовуйте setNumber для оновлення стану number
   };
 
   const handleAddContact = event => {
@@ -50,7 +47,7 @@ const App = () => {
     );
 
     if (existingContact) {
-      alert(`${name} is already in contacts.`);
+      alert(`${name} вже є у контактах.`);
       return;
     }
 
@@ -60,32 +57,26 @@ const App = () => {
       number,
     };
 
-    // Отправляем экшен Redux для добавления нового контакта
-    dispatch(addContact(newContact));
-
-    // Очищаем поля ввода после добавления контакта
-    setName('');
-    setNumber('');
+    dispatch(addContact(newContact)); // Диспатч дії addContact з новим контактом
+    setName(''); // Очистити поле вводу name
+    setNumber(''); // Очистити поле вводу number
   };
 
   const handleDeleteContact = contactId => {
-    // Отправляем экшен Redux для удаления контакта по его ID
-    dispatch(deleteContact(contactId));
+    dispatch(deleteContact(contactId)); // Диспатч дії deleteContact з ідентифікатором контакту
   };
 
   const handleFilterChange = event => {
-    // Получаем новое значение из поля ввода фильтра и обновляем его в хранилище
-    dispatch(setFilter(event.target.value));
+    dispatch(setFilter(event.target.value)); // Диспатч дії setFilter зі значенням фільтра
   };
 
-  // Фильтруем контакты на основе значения фильтра
   const filteredContacts = contacts.filter(contact =>
     contact.name.toLowerCase().includes(filter.toLowerCase())
   );
 
   return (
     <div className={styles.app}>
-      <h1 className={styles.title}>Phonebook</h1>
+      <h1 className={styles.title}>Телефонна книга</h1>
 
       <ContactForm
         name={name}
@@ -95,7 +86,7 @@ const App = () => {
         onSubmit={handleAddContact}
       />
 
-      <h2 className={styles.subtitle}>Contacts</h2>
+      <h2 className={styles.subtitle}>Контакти</h2>
 
       <Filter value={filter} onChange={handleFilterChange} />
 
